@@ -1,0 +1,232 @@
+{
+  "entities": {
+    "SiteSettings": {
+      "title": "SiteSettings",
+      "description": "General settings and content of the villa website",
+      "type": "object",
+      "properties": {
+        "brandName": {
+          "type": "string",
+          "description": "Name of the villa brand"
+        },
+        "ownerName": {
+          "type": "string",
+          "description": "Name of the villa owner"
+        },
+        "whatsappNumber": {
+          "type": "string",
+          "description": "Country code + phone digits for WhatsApp contact"
+        },
+        "instagramHandle": {
+          "type": "string",
+          "description": "Instagram handle with @ symbol"
+        },
+        "instagramUrl": {
+          "type": "string",
+          "description": "Complete Instagram profile URL"
+        },
+        "villaAddress": {
+          "type": "string",
+          "description": "Full physical address of the villa"
+        },
+        "checkInTime": {
+          "type": "string",
+          "description": "Format e.g. 1:00 PM"
+        },
+        "checkOutTime": {
+          "type": "string",
+          "description": "Format e.g. 11:00 AM"
+        },
+        "tagline": {
+          "type": "string",
+          "description": "Catchy promotional phrase"
+        },
+        "bookingRules": {
+          "type": "array",
+          "description": "List of policy rules"
+        }
+      },
+      "required": ["brandName", "ownerName", "whatsappNumber", "instagramHandle", "instagramUrl", "villaAddress", "checkInTime", "checkOutTime", "tagline", "bookingRules"]
+    },
+    "PricingRates": {
+      "title": "PricingRates",
+      "description": "Pricing, rates, and amenities add-on lists",
+      "type": "object",
+      "properties": {
+        "weekdayRate": {
+          "type": "number",
+          "description": "Per night price for Sun-Thu bookings"
+        },
+        "weekendRate": {
+          "type": "number",
+          "description": "Per night price for Fri-Sat bookings"
+        },
+        "currency": {
+          "type": "string",
+          "description": "Currency code, defaults to INR"
+        },
+        "maxGuests": {
+          "type": "number",
+          "description": "Maximum guest limit capacity (1-30)"
+        },
+        "addOns": {
+          "type": "array",
+          "description": "Array of add-on options like catering, rain dance"
+        },
+        "seasonalRates": {
+          "type": "array",
+          "description": "Custom seasonal pricing ranges"
+        },
+        "notes": {
+          "type": "string",
+          "description": "Additional pricing conditions"
+        }
+      },
+      "required": ["weekdayRate", "weekendRate", "currency", "maxGuests", "addOns", "seasonalRates", "notes"]
+    },
+    "Review": {
+      "title": "Review",
+      "description": "A single guest review",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Review unique identifier"
+        },
+        "stars": {
+          "type": "number",
+          "description": "Gold stars count from 1 to 5"
+        },
+        "text": {
+          "type": "string",
+          "description": "Review testimonial content"
+        },
+        "author": {
+          "type": "string",
+          "description": "Guest name"
+        },
+        "location": {
+          "type": "string",
+          "description": "Guest home location (e.g. Mumbai)"
+        },
+        "avatar": {
+          "type": "string",
+          "description": "Avatar local path or Cloudinary URL"
+        },
+        "visible": {
+          "type": "boolean",
+          "description": "Whether shown on the public face"
+        },
+        "pinned": {
+          "type": "boolean",
+          "description": "Whether pinned to show first in the list"
+        },
+        "order": {
+          "type": "number",
+          "description": "Custom sorting index"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Firestore creation timestamp"
+        }
+      },
+      "required": ["stars", "text", "author", "location", "visible", "pinned", "order"]
+    },
+    "GalleryImage": {
+      "title": "GalleryImage",
+      "description": "A single showcase picture of the villa",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Image unique identifier in database"
+        },
+        "src": {
+          "type": "string",
+          "description": "Cloudinary HTTPS URL"
+        },
+        "alt": {
+          "type": "string",
+          "description": "Alt description of image"
+        },
+        "category": {
+          "type": "string",
+          "description": "Section classification"
+        },
+        "order": {
+          "type": "number",
+          "description": "Index for arrangement"
+        },
+        "isOgImage": {
+          "type": "boolean",
+          "description": "Set as the site public OG share preview image"
+        }
+      },
+      "required": ["src", "alt", "category", "order", "isOgImage"]
+    },
+    "Invoice": {
+      "title": "Invoice",
+      "description": "A guest invoice document",
+      "type": "object",
+      "properties": {
+        "invoiceNumber": { "type": "string" },
+        "issueDate": { "type": "string" },
+        "guestName": { "type": "string" },
+        "guestPhone": { "type": "string" },
+        "bookingType": { "type": "string" },
+        "adults": { "type": "number" },
+        "children": { "type": "number" },
+        "checkIn": { "type": "string" },
+        "checkInTime": { "type": "string" },
+        "checkOut": { "type": "string" },
+        "checkOutTime": { "type": "string" },
+        "stayDuration": { "type": "string" },
+        "stayType": { "type": "string" },
+        "lineItems": { "type": "array" },
+        "advanceReceived": { "type": "number" },
+        "paymentMethod": { "type": "string" },
+        "upiId": { "type": "string" },
+        "fullyPaid": { "type": "boolean" },
+        "status": { "type": "string", "enum": ["PAID", "PARTIAL"] },
+        "notes": { "type": "string" }
+      },
+      "required": ["invoiceNumber", "issueDate", "guestName", "guestPhone", "bookingType", "adults", "children", "checkIn", "checkInTime", "checkOut", "checkOutTime", "stayDuration", "stayType", "lineItems", "advanceReceived", "paymentMethod", "upiId", "fullyPaid", "status", "notes"]
+    },
+    "BillingConfig": {
+      "title": "BillingConfig",
+      "description": "General system configuration properties for billing services",
+      "type": "object",
+      "properties": {
+        "defaultUpiId": { "type": "string", "description": "The default UPI address to initiate scanning widgets" }
+      },
+      "required": ["defaultUpiId"]
+    }
+  },
+  "firestore": {
+    "settings": {
+      "schema": "SiteSettings",
+      "description": "Holds the main singleton site setting document"
+    },
+    "pricing": {
+      "schema": "PricingRates",
+      "description": "Holds the main rates and pricing configurations"
+    },
+    "reviews": {
+      "schema": "Review",
+      "description": "Collection of all guest review/testimonials"
+    },
+    "gallery": {
+      "schema": "GalleryImage",
+      "description": "Collection of all photos for showcasing the villa"
+    },
+    "invoices": {
+      "schema": "Invoice",
+      "description": "Collection of generated customer invoices"
+    },
+    "billingSettings": {
+      "schema": "BillingConfig",
+      "description": "Stores site default bank details or properties"
+    }
+  }
+}

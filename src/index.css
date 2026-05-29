@@ -1,0 +1,144 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg-dark: #0D1117;
+  --color-bg-card: #141B26;
+  --color-gold: #C9A84C;
+  --color-gold-light: #F0D080;
+  --color-gold-shimmer: #FFE066;
+  --color-cream: #FAF6EE;
+  --color-green: #2D6A4F;
+  --color-green-light: #52B788;
+  --color-border-gold: rgba(201, 168, 76, 0.3);
+
+  --font-sans: "Poppins", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Playfair Display", serif;
+  --font-serif-elegant: "Cormorant Garamond", serif;
+}
+
+@layer utilities {
+  /* Dynamic Shimmering Gold typography */
+  .shimmer-text {
+    background: linear-gradient(
+      90deg,
+      #FAF6EE 0%,
+      rgba(240, 208, 128, 0.9) 25%,
+      #FAF6EE 50%,
+      rgba(240, 208, 128, 0.9) 75%,
+      #FAF6EE 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: goldSweep 6s linear infinite;
+  }
+
+  .gold-accent-text {
+    color: var(--color-gold-light);
+    text-shadow: 0 0 10px rgba(201, 168, 76, 0.2);
+  }
+
+  .gold-badge {
+    border: 1px solid rgba(201, 168, 76, 0.4);
+    background: rgba(20, 27, 38, 0.6);
+    backdrop-filter: blur(8px);
+  }
+
+  .whatsapp-pulse {
+    animation: wa-pulse 2s infinite;
+  }
+
+  /* Custom visual fade-in definitions */
+  .reveal-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .reveal-hidden {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+}
+
+/* Base custom styles and standard transitions */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-bg-dark);
+  color: var(--color-cream);
+  overflow-x: hidden;
+}
+
+h1, h2, h3, .heading-playfair {
+  font-family: var(--font-display);
+}
+
+.subheading-cormorant {
+  font-family: var(--font-serif-elegant);
+}
+
+/* Shimmer Animation Sweep on Load */
+@keyframes goldSweep {
+  0% {
+    background-position: 200% center;
+  }
+  100% {
+    background-position: -200% center;
+  }
+}
+
+/* WhatsApp pulse effect */
+@keyframes wa-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(82, 183, 136, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 15px rgba(82, 183, 136, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(82, 183, 136, 0);
+  }
+}
+
+/* Luxury scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bg-dark);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-gold);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gold-light);
+}
+
+/* Background parallax rule if supported */
+.bg-fixed-parallax {
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+@media (max-width: 768px) {
+  .bg-fixed-parallax {
+    background-attachment: scroll; /* Disable standard parallax on small mobile due to paint reflow overhead */
+  }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.gallery-card {
+  animation: fadeInUp 0.5s ease forwards;
+}

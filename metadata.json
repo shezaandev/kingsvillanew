@@ -1,0 +1,6 @@
+{
+  "name": "Kings Diamonds Villas",
+  "description": "A premium luxury private villa in Lonavala featuring 4BHK, infinity pool, bonfire, and mountain views. Designed to drive WhatsApp bookings and family getaways.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
