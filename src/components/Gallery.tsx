@@ -5,36 +5,53 @@ import { INSTAGRAM_URL } from "../data";
 import { useSiteImages } from "../hooks/useSiteData";
 
 interface GalleryProps {
-  customImages?: any[];
+  customImages?: any[] | null;
 }
 
 export default function Gallery({ customImages }: GalleryProps) {
   const [activeImageIdx, setActiveImageIdx] = useState<number | null>(null);
+  const [activeTab, setActiveTab] = useState<"all" | "princess-villa">("all");
   const touchStartX = useRef<number | null>(null);
 
   const { getUrl } = useSiteImages();
   const instagramBannerUrl = getUrl("instagram", "");
 
-  const images = customImages && customImages.length > 0 
+  const isLoading = customImages === null;
+
+  const images = !isLoading && customImages && customImages.length > 0 
     ? customImages.map((img, i) => ({
         id: img.id,
         src: img.src,
         alt: img.alt,
-        fallbackType: (img.category === "pool" || img.category === "bedroom" || img.category === "garden" || img.category === "terrace") ? img.category : "exterior",
+        fallbackType: (img.category === "pool" || img.category === "bedroom" || img.category === "garden" || img.category === "terrace") ? img.category : "exterior" as any,
         aspect: i % 4 === 0 ? "aspect-square" : i % 4 === 1 ? "aspect-[4/5]" : i % 4 === 2 ? "aspect-[16/10]" : "aspect-[3/4]",
       }))
-    : Array.from({ length: 10 }, (_, i) => ({
-        id: i + 1,
+    : !isLoading
+    ? Array.from({ length: 10 }, (_, i) => ({
+        id: `static-${i}`,
         src: `/images/gallery${i + 1}.jpg`,
         alt: `Kings Diamonds Villa View ${i + 1}`,
         fallbackType: (i % 3 === 0 ? "pool" : i % 3 === 1 ? "bedroom" : "terrace") as "pool" | "bedroom" | "terrace" | "garden",
         aspect: i % 4 === 0 ? "aspect-square" : i % 4 === 1 ? "aspect-[4/5]" : i % 4 === 2 ? "aspect-[16/10]" : "aspect-[3/4]",
-      }));
+      }))
+    : [];
+
+  // Princess Villa static images (shown when activeTab === "princess-villa")
+  const princessVillaImages = Array.from({ length: 14 }, (_, i) => ({
+    id: `pv-${i + 1}`,
+    src: `/images/princess-villa/pv${i + 1}.jpg`,
+    alt: `Princess Villa — View ${i + 1}`,
+    fallbackType: (i % 3 === 0 ? "pool" : i % 3 === 1 ? "exterior" : "bedroom") as any,
+    aspect: i % 4 === 0 ? "aspect-square" : i % 4 === 1 ? "aspect-[4/5]" : i % 4 === 2 ? "aspect-[16/10]" : "aspect-[3/4]",
+  }));
+
+  // Use either the full existing images array OR princess villa images based on tab
+  const displayImages = activeTab === "princess-villa" ? princessVillaImages : images;
 
   const gridRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!gridRef.current || images.length === 0) return;
+    if (!gridRef.current || displayImages.length === 0) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -59,7 +76,7 @@ export default function Gallery({ customImages }: GalleryProps) {
       clearTimeout(timer);
       observer.disconnect();
     };
-  }, [images]); // re-runs whenever images array changes (Firestore loaded)
+  }, [displayImages]); // re-runs whenever displayImages array changes (Firestore loaded or tab switches)
 
   // Handle keyboard events (Esc, Left, Right keys)
   useEffect(() => {
@@ -89,14 +106,14 @@ export default function Gallery({ customImages }: GalleryProps) {
   const handlePrev = () => {
     setActiveImageIdx((prev) => {
       if (prev === null) return null;
-      return prev === 0 ? images.length - 1 : prev - 1;
+      return prev === 0 ? displayImages.length - 1 : prev - 1;
     });
   };
 
   const handleNext = () => {
     setActiveImageIdx((prev) => {
       if (prev === null) return null;
-      return prev === images.length - 1 ? 0 : prev + 1;
+      return prev === displayImages.length - 1 ? 0 : prev + 1;
     });
   };
 
@@ -137,33 +154,69 @@ export default function Gallery({ customImages }: GalleryProps) {
           </p>
         </div>
 
-        {/* Masonry / Auto-Grid layout */}
-        <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6" ref={gridRef}>
-          {images.map((img, idx) => (
-            <div
-              key={img.id}
-              className={`gallery-card break-inside-avoid relative overflow-hidden rounded-2xl border border-[#C9A84C]/10 bg-[#141B26] cursor-pointer group hover:border-[#C9A84C]/30 hover:shadow-[0_8px_32px_rgba(201,168,76,0.12)] transition-all duration-300 transform hover:-translate-y-1 ${img.aspect}`}
-              onClick={() => setActiveImageIdx(idx)}
+        {/* Album Tab Bar */}
+        <div className="flex items-center justify-center gap-3 mb-12">
+          {[
+            { key: "all", label: "All Photos" },
+            { key: "princess-villa", label: "Princess Villa" },
+          ].map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => {
+                setActiveTab(tab.key as any);
+                setActiveImageIdx(null); // close lightbox on tab switch
+              }}
+              className={`px-5 py-2 rounded-full text-xs font-semibold uppercase tracking-widest transition-all duration-300 border ${
+                activeTab === tab.key
+                  ? "bg-[#C9A84C] text-[#0D1117] border-[#C9A84C] shadow-[0_4px_16px_rgba(201,168,76,0.3)]"
+                  : "bg-transparent text-[#FAF6EE]/60 border-[#C9A84C]/30 hover:border-[#C9A84C]/70 hover:text-[#FAF6EE]"
+              }`}
             >
-              <LazyImage
-                src={img.src}
-                alt={img.alt}
-                fallbackType={img.fallbackType}
-                className="w-full h-full object-cover"
-              />
-              
-              {/* Luxury Gold Overlay with View Icon */}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0D1117]/90 via-[#141B26]/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center text-center">
-                <div className="p-3 bg-[#FAF6EE] text-[#0D1117] rounded-full shadow-lg transform scale-75 group-hover:scale-100 transition-transform duration-300">
-                  <Search size={20} className="stroke-[2.5]" />
-                </div>
-                <span className="text-xs tracking-widest text-[#F0D080] font-sans font-medium uppercase mt-3">
-                  🔍 View Spaces
-                </span>
-              </div>
-            </div>
+              {tab.label}
+            </button>
           ))}
         </div>
+
+        {/* Masonry / Auto-Grid layout */}
+        {isLoading ? (
+          <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div
+                key={i}
+                className={`break-inside-avoid rounded-2xl bg-[#141B26] border border-[#C9A84C]/10 animate-pulse ${
+                  i % 4 === 0 ? "aspect-square" : i % 4 === 1 ? "aspect-[4/5]" : i % 4 === 2 ? "aspect-[16/10]" : "aspect-[3/4]"
+                }`}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6" ref={gridRef}>
+            {displayImages.map((img, idx) => (
+              <div
+                key={img.id}
+                className={`gallery-card break-inside-avoid relative overflow-hidden rounded-2xl border border-[#C9A84C]/10 bg-[#141B26] cursor-pointer group hover:border-[#C9A84C]/30 hover:shadow-[0_8px_32px_rgba(201,168,76,0.12)] transition-all duration-300 transform hover:-translate-y-1 ${img.aspect}`}
+                onClick={() => setActiveImageIdx(idx)}
+              >
+                <LazyImage
+                  src={img.src}
+                  alt={img.alt}
+                  fallbackType={img.fallbackType}
+                  className="w-full h-full object-cover"
+                />
+                
+                {/* Luxury Gold Overlay with View Icon */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0D1117]/90 via-[#141B26]/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center text-center">
+                  <div className="p-3 bg-[#FAF6EE] text-[#0D1117] rounded-full shadow-lg transform scale-75 group-hover:scale-100 transition-transform duration-300">
+                    <Search size={20} className="stroke-[2.5]" />
+                  </div>
+                  <span className="text-xs tracking-widest text-[#F0D080] font-sans font-medium uppercase mt-3">
+                    🔍 View Spaces
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Instagram Callout Box */}
         <div className="mt-16 bg-[#141B26] border border-[#C9A84C]/30 rounded-2xl p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6 hover:shadow-[0_8px_32px_rgba(201,168,76,0.1)] transition-all duration-300">
@@ -240,15 +293,15 @@ export default function Gallery({ customImages }: GalleryProps) {
               onClick={(e) => e.stopPropagation()}
             >
               <LazyImage
-                src={images[activeImageIdx].src}
-                alt={images[activeImageIdx].alt}
-                fallbackType={images[activeImageIdx].fallbackType}
+                src={displayImages[activeImageIdx].src}
+                alt={displayImages[activeImageIdx].alt}
+                fallbackType={displayImages[activeImageIdx].fallbackType}
                 className="max-w-full max-h-[75vh] object-contain rounded-lg border border-[#C9A84C]/40 shadow-[0_0_50px_rgba(201,168,76,0.3)]"
               />
               <div className="absolute -bottom-10 left-0 right-0 text-center text-xs md:text-sm text-[#FAF6EE]/80 bg-black/40 py-2 rounded-md font-sans tracking-wide">
-                <span>{images[activeImageIdx].alt}</span>
+                <span>{displayImages[activeImageIdx].alt}</span>
                 <span className="text-[#C9A84C] font-semibold ml-3">
-                  {activeImageIdx + 1} / {images.length}
+                  {activeImageIdx + 1} / {displayImages.length}
                 </span>
               </div>
             </div>
