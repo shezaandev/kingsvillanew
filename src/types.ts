@@ -51,6 +51,7 @@ export interface GalleryImage {
   category: "pool" | "bedroom" | "garden" | "exterior" | "living" | "dining" | "terrace" | "bonfire" | "other";
   order: number;
   isOgImage: boolean;
+  villaAlbum?: string; // optional — existing docs without this field are treated as "All Photos"
 }
 
 export interface SiteSettings {
