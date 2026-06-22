@@ -30,6 +30,11 @@ const CATEGORIES = [
   { value: "other", label: "Other Area" }
 ] as const;
 
+const VILLA_ALBUMS = [
+  { value: "", label: "General (No Album)" },
+  { value: "princess-villa", label: "Princess Villa" },
+];
+
 const SECTION_IMAGES = [
   { key: "hero", label: "Hero Background", defaultPath: "/images/hero.jpg" },
   { key: "instagram", label: "Instagram Section Banner", defaultPath: "" },
@@ -72,6 +77,7 @@ export default function AdminGallery() {
   // Create state
   const [newAlt, setNewAlt] = useState("");
   const [newCat, setNewCat] = useState<GalleryImage["category"]>("exterior");
+  const [newAlbum, setNewAlbum] = useState<string>("");
   
   // Status state
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
@@ -174,12 +180,14 @@ export default function AdminGallery() {
         src: uploadedUrl,
         alt: newAlt.trim() || file.name.split(".")[0],
         category: newCat,
+        ...(newAlbum ? { villaAlbum: newAlbum } : {}), // only add field if album selected
         order: nextOrder,
         isOgImage: images.length === 0 // If first image, set as OG preview automatically
       });
       
       showToast("Media uploaded successfully!", "success");
       setNewAlt("");
+      setNewAlbum("");
       
       // Clear staged state
       setStagedFile(null);
@@ -290,11 +298,11 @@ export default function AdminGallery() {
   }
 
   return (
-    <div className="space-y-10 animate-fade-in max-w-6xl mx-auto px-2 pb-16 text-[#FAF6EE]">
+    <div className="space-y-10 animate-fade-in max-w-6xl mx-auto px-4 sm:px-2 pb-16 text-[#FAF6EE]">
       
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-serif font-bold text-white tracking-tight" style={{ fontFamily: "Georgia, serif" }}>
+        <h1 className="text-2xl sm:text-3xl font-serif font-bold text-white tracking-tight" style={{ fontFamily: "Georgia, serif" }}>
           Media Showcase Gallery
         </h1>
         <p className="text-sm text-[#FAF6EE]/50 mt-1">
@@ -303,10 +311,10 @@ export default function AdminGallery() {
       </div>
 
       {/* Website Section Images Section */}
-      <div className="bg-[#141B26] border border-[#C9A84C]/25 rounded-3xl p-6 shadow-2xl space-y-6 relative overflow-hidden backdrop-blur-md">
+      <div className="bg-[#141B26] border border-[#C9A84C]/25 rounded-3xl p-4 sm:p-6 shadow-2xl space-y-6 relative overflow-hidden backdrop-blur-md">
         <div className="flex items-center gap-2">
           <Globe className="w-5 h-5 text-[#C9A84C]" />
-          <h2 className="text-xl font-serif font-bold text-[#F0D080]" style={{ fontFamily: "Georgia, serif" }}>
+          <h2 className="text-base sm:text-lg font-serif font-bold text-[#F0D080]" style={{ fontFamily: "Georgia, serif" }}>
             Website Section Images
           </h2>
         </div>
@@ -320,7 +328,7 @@ export default function AdminGallery() {
             Loading saved images...
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {SECTION_IMAGES.map((item) => {
               const currentValue = siteImages[item.key]?.trim() || "";
               return (
@@ -369,7 +377,7 @@ export default function AdminGallery() {
                     </label>
                     <label
                       htmlFor={`upload-${item.key}`}
-                      className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border border-dashed border-[#C9A84C]/40 text-[#C9A84C] font-bold text-xs cursor-pointer hover:border-[#C9A84C] hover:bg-[#C9A84C]/5 transition-all"
+                      className="flex items-center justify-center gap-2 w-full h-11 rounded-xl border border-dashed border-[#C9A84C]/40 text-[#C9A84C] font-bold text-xs cursor-pointer hover:border-[#C9A84C] hover:bg-[#C9A84C]/5 transition-all"
                     >
                       <Upload className="w-3.5 h-3.5" />
                       {sectionStagedFiles[item.key] ? "Change Selected" : "Choose from Gallery"}
@@ -411,7 +419,7 @@ export default function AdminGallery() {
                           type="button"
                           disabled={uploadingKey !== null}
                           onClick={() => handleImageUpload(item.key, sectionStagedFiles[item.key])}
-                          className="w-full bg-[#C9A84C]/20 hover:bg-[#C9A84C]/35 text-[#C9A84C] hover:text-white border border-[#C9A84C]/50 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+                          className="w-full bg-[#C9A84C]/20 hover:bg-[#C9A84C]/35 text-[#C9A84C] hover:text-white border border-[#C9A84C]/50 h-11 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
                         >
                           {uploadingKey === item.key ? (
                             <>
@@ -439,10 +447,10 @@ export default function AdminGallery() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
         {/* Upload Form - Left */}
-        <div className="lg:col-span-4 bg-[#141B26] border border-[#C9A84C]/20 rounded-2xl p-6 shadow-xl space-y-6">
+        <div className="lg:col-span-4 bg-[#141B26] border border-[#C9A84C]/20 rounded-2xl p-4 sm:p-6 shadow-xl space-y-6">
           <div className="flex items-center gap-2">
             <CloudUpload className="w-5 h-5 text-[#C9A84C]" />
-            <h2 className="text-lg font-serif font-bold text-[#F0D080]" style={{ fontFamily: "Georgia, serif" }}>
+            <h2 className="text-base sm:text-lg font-serif font-bold text-[#F0D080]" style={{ fontFamily: "Georgia, serif" }}>
               Upload Portfolio Item
             </h2>
           </div>
@@ -455,7 +463,7 @@ export default function AdminGallery() {
               <input
                 type="text"
                 placeholder="e.g. Stunning Private Infinity Pool at dusk"
-                className="w-full bg-[#0D1117] border border-[#C9A84C]/20 focus:border-[#C9A84C] rounded-xl px-4 py-3 text-sm outline-none transition-all"
+                className="w-full bg-[#0D1117] border border-[#C9A84C]/20 focus:border-[#C9A84C] rounded-xl px-4 py-3 min-h-[44px] text-base sm:text-sm outline-none transition-all"
                 value={newAlt}
                 onChange={(e) => setNewAlt(e.target.value)}
               />
@@ -463,10 +471,25 @@ export default function AdminGallery() {
 
             <div>
               <label className="block text-[10px] uppercase tracking-wider text-[#FAF6EE]/60 font-bold mb-2">
+                Villa Album
+              </label>
+              <select
+                className="w-full bg-[#0D1117] border border-[#C9A84C]/20 focus:border-[#C9A84C] rounded-xl px-4 py-3 min-h-[44px] text-base sm:text-sm outline-none transition-all"
+                value={newAlbum}
+                onChange={(e) => setNewAlbum(e.target.value)}
+              >
+                {VILLA_ALBUMS.map(v => (
+                  <option key={v.value} value={v.value}>{v.label}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-[10px] uppercase tracking-wider text-[#FAF6EE]/60 font-bold mb-2">
                 Section Classification
               </label>
               <select
-                className="w-full bg-[#0D1117] border border-[#C9A84C]/20 focus:border-[#C9A84C] rounded-xl px-4 py-3 text-sm outline-none transition-all"
+                className="w-full bg-[#0D1117] border border-[#C9A84C]/20 focus:border-[#C9A84C] rounded-xl px-4 py-3 min-h-[44px] text-base sm:text-sm outline-none transition-all"
                 value={newCat}
                 onChange={(e) => setNewCat(e.target.value as GalleryImage["category"])}
               >
@@ -478,7 +501,7 @@ export default function AdminGallery() {
 
             {/* Drag & Drop Boundary Box */}
             <div
-              className={`border-2 border-dashed rounded-2xl p-8 flex flex-col items-center text-center justify-center transition-all min-h-48 cursor-pointer ${
+              className={`border-2 border-dashed rounded-2xl p-4 sm:p-8 flex flex-col items-center text-center justify-center transition-all min-h-[192px] cursor-pointer ${
                 dragActive 
                   ? "border-[#C9A84C] bg-[#C9A84C]/10" 
                   : "border-[#C9A84C]/20 bg-[#0D1117]/50 hover:bg-[#0D1117]"
@@ -536,7 +559,7 @@ export default function AdminGallery() {
                   e.stopPropagation();
                   handleUploadFile(stagedFile);
                 }}
-                className="w-full py-3 rounded-xl bg-[#C9A84C]/20 hover:bg-[#C9A84C]/35 text-[#C9A84C] hover:text-white border border-[#C9A84C]/50 font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-lg cursor-pointer"
+                className="w-full h-11 rounded-xl bg-[#C9A84C]/20 hover:bg-[#C9A84C]/35 text-[#C9A84C] hover:text-white border border-[#C9A84C]/50 font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-lg cursor-pointer"
               >
                 <Upload className="w-3.5 h-3.5" />
                 Upload Image
@@ -614,7 +637,7 @@ export default function AdminGallery() {
                       </label>
                       <input 
                         type="text" 
-                        className="w-full bg-[#0D1117] border border-[#C9A84C]/15 focus:border-[#C9A84C] rounded-lg px-2.5 py-1.5 text-xs text-white outline-none"
+                        className="w-full bg-[#0D1117] border border-[#C9A84C]/15 focus:border-[#C9A84C] rounded-lg px-2.5 py-1.5 min-h-[44px] text-base sm:text-xs text-white outline-none"
                         value={editingAlts[img.id] ?? img.alt}
                         onChange={(e) => {
                           const val = e.target.value;
@@ -632,7 +655,7 @@ export default function AdminGallery() {
                           Filter View
                         </label>
                         <select 
-                          className="w-full bg-[#0D1117] border border-[#C9A84C]/15 focus:border-[#C9A84C] rounded-lg p-1.5 text-xs text-white outline-none"
+                          className="w-full bg-[#0D1117] border border-[#C9A84C]/15 focus:border-[#C9A84C] rounded-lg p-1.5 min-h-[44px] text-base sm:text-xs text-white outline-none"
                           value={img.category}
                           onChange={(e) => handleUpdateField(img.id, "category", e.target.value)}
                         >
@@ -648,7 +671,7 @@ export default function AdminGallery() {
                         </label>
                         <input 
                           type="number"
-                          className="w-full bg-[#0D1117] border border-[#C9A84C]/15 focus:border-[#C9A84C] rounded-lg p-1.5 text-xs text-center text-white outline-none font-mono"
+                          className="w-full bg-[#0D1117] border border-[#C9A84C]/15 focus:border-[#C9A84C] rounded-lg p-1.5 min-h-[44px] text-base sm:text-xs text-center text-white outline-none font-mono"
                           value={img.order}
                           onChange={(e) => handleUpdateField(img.id, "order", Number(e.target.value))}
                         />
